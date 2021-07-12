@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { Switch, TextField, Button, FormControlLabel } from '@material-ui/core';
 
-function DadosPessoais({onSubmit, validarCPF}) {
+function DadosPessoais({ onSubmit, validacoes }) {
     const [nome, setNome] = useState("")
     const [sobrenome, setSobrenome] = useState("")
     const [CPF, setCpf] = useState("")
     const [promocoes, setPromocoes] = useState(true)
     const [novidades, setNovidades] = useState(true)
-    const [erros, setErros] = useState({cpf:{valido:true, texto:""}})
+    const [erros, setErros] = useState({ cpf: { valido: true, texto: "" } })
+
+
+    function validarCampos(event){
+            const {name, value} = event.target
+            const novoEstado = {...erros}
+            novoEstado[name] = validacoes[name](value)
+            setErros(novoEstado)
+        
+    }
+
     return (
         <form onSubmit={(event) => {
             event.preventDefault()
-            onSubmit({nome, sobrenome, CPF, novidades, promocoes})
+            onSubmit({ nome, sobrenome, CPF, novidades, promocoes })
         }}>
             <TextField
                 value={nome}
@@ -43,13 +53,11 @@ function DadosPessoais({onSubmit, validarCPF}) {
                 onChange={event => {
                     setCpf(event.target.value)
                 }}
-                onBlur={(event)=>{
-                    const ehValido = validarCPF(event.target.value)
-                    setErros({cpf: ehValido})
-                }}
+                onBlur={validarCampos}
                 error={!erros.cpf.valido}
                 helperText={erros.cpf.texto}
                 id="CPF"
+                name="cpf"
                 label="CPF"
                 variant="outlined"
                 margin="normal"
@@ -59,12 +67,12 @@ function DadosPessoais({onSubmit, validarCPF}) {
             <FormControlLabel
                 label="Promoções"
                 control={
-                    <Switch 
-                    checked={promocoes}
+                    <Switch
+                        checked={promocoes}
 
-                    onChange={(event) => {
-                        setPromocoes(event.target.checked)
-                    }}
+                        onChange={(event) => {
+                            setPromocoes(event.target.checked)
+                        }}
                         name="Promocoes"
                         color="primary" />
                 } />
@@ -73,12 +81,12 @@ function DadosPessoais({onSubmit, validarCPF}) {
                 label="Novidades"
                 control={
                     <Switch
-                    checked={novidades}
-                     onChange={(event) => {
-                        setNovidades(event.target.checked)
-                    }}
+                        checked={novidades}
+                        onChange={(event) => {
+                            setNovidades(event.target.checked)
+                        }}
                         name="Novidades"
-                        
+
                         color="primary" />} />
 
 
