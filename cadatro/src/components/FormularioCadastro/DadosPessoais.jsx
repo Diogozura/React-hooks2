@@ -1,27 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Switch, TextField, Button, FormControlLabel } from '@material-ui/core';
+import ValidacoesCadastro from '../../contexts/ValidacoesCadastro';
 
-function DadosPessoais({ onSubmit, validacoes }) {
+function DadosPessoais({ onSubmit}) {
     const [nome, setNome] = useState("")
     const [sobrenome, setSobrenome] = useState("")
     const [CPF, setCpf] = useState("")
     const [promocoes, setPromocoes] = useState(true)
     const [novidades, setNovidades] = useState(true)
-    const [erros, setErros] = useState({ cpf: { valido: true, texto: "" } })
+    const [erros, setErros] = useState({ cpf: { valido: true, texto: "" }, nome:{ valido: true, texto: "" }})
 
+    const validacoes = useContext(ValidacoesCadastro)
+    function validarCampos(event) {
+        const { name, value } = event.target
+        const novoEstado = { ...erros }
+        novoEstado[name] = validacoes[name](value)
+        setErros(novoEstado)
 
-    function validarCampos(event){
-            const {name, value} = event.target
-            const novoEstado = {...erros}
-            novoEstado[name] = validacoes[name](value)
-            setErros(novoEstado)
-        
+    }
+    function possoEnviar(){
+        for(let campo in erros){
+            if(!erros[campo].valido){
+                return false
+            }
+        }
+        return true
     }
 
     return (
         <form onSubmit={(event) => {
             event.preventDefault()
-            onSubmit({ nome, sobrenome, CPF, novidades, promocoes })
+            if(possoEnviar()){
+                onSubmit({ nome, sobrenome, CPF, novidades, promocoes })
+            }
+            
         }}>
             <TextField
                 value={nome}
@@ -30,8 +42,12 @@ function DadosPessoais({ onSubmit, validacoes }) {
 
 
                 }}
+                onBlur={validarCampos}
+                error={!erros.nome.valido}
+                helperText={erros.nome.texto}
                 id="nome"
                 label="Nome"
+                name="nome"
                 variant="outlined"
                 margin="normal"
                 fullWidth />
@@ -92,7 +108,7 @@ function DadosPessoais({ onSubmit, validacoes }) {
 
 
             <Button type="submit" variant="contained" color="primary">
-                Cadastrar
+                Próximo 
             </Button>
         </form>
     )

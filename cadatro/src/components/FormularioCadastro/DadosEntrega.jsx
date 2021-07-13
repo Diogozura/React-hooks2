@@ -82,7 +82,7 @@ function DadosEntrega({onSubmit}) {
                 variant="contained"
                 color="primary"
                 fullWidth>
-                Finalizar Cadastrar
+                Finalizar Cadastro
             </Button>
 
         </form>
